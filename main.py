@@ -1,4 +1,5 @@
 import dearpygui.dearpygui as dpg
+import pandas as pd
 
 width = 720
 height = 540
@@ -28,7 +29,6 @@ dpg.create_viewport(
 )
 
 dpg.add_file_dialog(
-  directory_selector=True,
   show=False,
   callback=open,
   cancel_callback=close,
