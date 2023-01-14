@@ -7,7 +7,31 @@ currentCorr = 'Standing'
 show_table = False
 
 def create_table(data):
-  show_table = True
+  rows = data.shape[0]
+  columns = data.shape[1]
+  
+  with dpg.window(label="Tabla"):
+    with dpg.table(
+      header_row=True, 
+      policy=dpg.mvTable_SizingFixedFit, 
+      row_background=True, 
+      reorderable=True,
+      resizable=True,
+      no_host_extendX=False,
+      hideable=True,
+      borders_innerV=True,
+      delay_search=True,
+      borders_outerV=True,
+      borders_innerH=True,
+      borders_outerH=True
+    ):
+      for column in data.columns:
+        dpg.add_table_column(label=column, width_fixed=True)
+
+      for row in range(0, rows):
+        with dpg.table_row():
+          for j in range(0, len(data.columns)):
+            dpg.add_text("Text")
 
 
 # Functions
@@ -34,7 +58,7 @@ dpg.create_viewport(
   title='Custom Title',
   width=width,
   height=height,
-  resizable=False,
+  resizable=True,
 )
 
 with dpg.file_dialog(directory_selector=False, show=False, callback=open, cancel_callback=close, id="file_dialog_id", width=width-width*0.3, height=height-height*0.3):
@@ -46,25 +70,16 @@ with dpg.file_dialog(directory_selector=False, show=False, callback=open, cancel
 
 with dpg.window(
   label='Main Window', 
-  no_title_bar=True,
-  no_move=True, width=width,
+  no_title_bar=False,
+  no_move=False, 
+  width=width,
   height=height,
-  no_resize=True,
+  no_resize=False,
 ):
   dpg.add_button(label="Buscar archivo", callback=lambda: dpg.show_item("file_dialog_id"))
   dpg.add_radio_button(items=['Standing', 'Beggs'], horizontal=True,callback=radio_callback, default_value=currentCorr)
-  with dpg.table(header_row=False, show=show_table):
-      dpg.add_table_column()
-      dpg.add_table_column()
-      dpg.add_table_column()
-      
-      for i in range(0, 4):
-        with dpg.table_row():
-          for j in range(0, 3):
-            dpg.add_text(f"Row {i} Column {j}")
+
   
-  # dpg.add_text("hello")
-  # dpg.add_radio_button(items=['one', 'two', 'three'], horizontal=True)
   
 def run():
   dpg.setup_dearpygui()
