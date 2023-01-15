@@ -1,5 +1,8 @@
+from datetime import datetime as dt
 import dearpygui.dearpygui as dpg
+import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
 width = 780
 height = 620
@@ -27,6 +30,37 @@ def FtoR(n):
 
 tmp = []
 
+def getTheDate():
+  return dt.now().strftime("%d_%m_%Y_%H_%M_%S")
+
+def saveExcel(df):
+  name = f'output/fileCreatedAt_{getTheDate()}.xlsx'
+  print("Saving...", name)
+  df.to_excel(name, index=False)
+
+
+def strToFloat(list):
+  print(list, "Original array")
+  tmp = np.array([])
+  for i in list:
+    np.append(tmp, float(i))
+  print(tmp, 'Final array')
+  return tmp
+
+def doGraphic(df):
+  x = np.array(df['Eo+Efw'].tolist(), dtype=np.float64)
+  y = np.array(df['F'].tolist(), dtype=np.float64)
+  
+  coefficients = np.polyfit(x, y, 1)
+  plt.scatter(x, y)
+  plt.plot(x, np.polyval(coefficients, x), 'r-')
+  plt.xlabel('Eo+Efw')
+  plt.ylabel('F')
+  plt.title('Eo+Efw vs F')
+  plt.show(block=True)
+  # plt.draw()
+  pass
+
 def do(df):
   rows = df.shape[0]
   columns = df.shape[1]
@@ -48,6 +82,8 @@ def do(df):
   newDf= pd.DataFrame(tmp, columns=['F', 'Eo', 'deltaP', 'Efw', 'Eo+Efw'])
   tmpDf = pd.concat([df, newDf], axis=1)
   create_table(tmpDf)
+  doGraphic(tmpDf)
+  saveExcel(tmpDf)
 
 
 def create_table(data):

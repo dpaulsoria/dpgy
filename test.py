@@ -1,29 +1,26 @@
-import dearpygui.dearpygui as dpg
+import numpy as np
+import matplotlib.pyplot as plt
 
-dpg.create_context()
+# x and y coordinates of the points to fit
+x = [1, 2, 3, 4]
+y = [2, 4, 1, 5]
 
-with dpg.window(label="Tutorial"):
+# fit a line to the points
+coefficients = np.polyfit(x, y, 1)
 
-    with dpg.table(header_row=True, policy=dpg.mvTable_SizingFixedFit, row_background=True, reorderable=True,
-                   resizable=True, no_host_extendX=False, hideable=True,
-                   borders_innerV=True, delay_search=True, borders_outerV=True, borders_innerH=True,
-                   borders_outerH=True):
+# create a new figure
+plt.figure()
 
-        dpg.add_table_column(label="AAA", width_fixed=True)
-        dpg.add_table_column(label="BBB", width_fixed=True)
-        dpg.add_table_column(label="CCC", width_stretch=True, init_width_or_weight=0.0)
-        dpg.add_table_column(label="DDD", width_stretch=True, init_width_or_weight=0.0)
+# plot the points
+plt.scatter(x, y)
 
-        for i in range(0, 5):
-            with dpg.table_row():
-                for j in range(0, 4):
-                    if j == 2 or j == 3:
-                        dpg.add_text(f"Stretch {i},{j}")
-                    else:
-                        dpg.add_text(f"Fixed {i}, {j}")
+# plot the line of best fit
+plt.plot(x, np.polyval(coefficients, x), 'r-')
 
-dpg.create_viewport(title='Custom Title', width=800, height=600)
-dpg.setup_dearpygui()
-dpg.show_viewport()
-dpg.start_dearpygui()
-dpg.destroy_context()
+# add labels and a title to the plot
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('My Scatter Plot')
+
+# show the plot
+plt.show()
