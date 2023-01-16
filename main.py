@@ -98,7 +98,6 @@ def strToFloat(list):
 def doGraphic(df):
   x = np.array(df['Eo+Efw'].tolist(), dtype=np.float64)
   y = np.array(df['F'].tolist(), dtype=np.float64)
-  
   coefficients = np.polyfit(x, y, 1)
   plt.scatter(x, y)
   plt.plot(x, np.polyval(coefficients, x), 'r-')
@@ -106,10 +105,8 @@ def doGraphic(df):
   plt.ylabel('F')
   plt.title('Eo+Efw vs F')
   plt.show(block=True)
-  # plt.draw()
-  pass
 
-def do(df, type):
+def do(df, type, currentCorr):
   rows = df.shape[0]
   columns = df.shape[1]
   boi = np.float64(df['Bo'][0])
@@ -161,7 +158,6 @@ def create_table(data):
     ):
       for column in data.columns:
         dpg.add_table_column(label=column.capitalize(), width_fixed=True)
-
       for row in range(0, rows):
         with dpg.table_row():
           for column in data.columns:
@@ -201,7 +197,7 @@ def open(sender, app_data):
   # print(df)
   toWorkWith = pd.concat([data, df], axis=1)
   print(toWorkWith)
-  do(toWorkWith, type)
+  do(toWorkWith, type, currentCorr)
   # do(data)
 
 def close(sender, app_data):
@@ -234,10 +230,6 @@ def generateOpenDialog():
     width=width-width*0.3, height=height-height*0.3):
       dpg.add_file_extension(".xlsx", color=(81, 191, 89, 255), custom_text="[xlsx]")
       dpg.add_file_extension(".csv", color=(0, 255, 0, 255), custom_text="[csv]")
-      # dpg.add_file_extension(".*")
-      # dpg.add_file_extension("", color=(150, 255, 150, 255))
-      # dpg.add_file_extension("Source files (*.cpp *.h *.hpp){.cpp,.h,.hpp}", color=(0, 255, 255, 255))
-      # dpg.add_file_extension(".h", color=(255, 0, 255, 255), custom_text="[header]")
 
 with dpg.window(
   label='Main Window', 
@@ -247,7 +239,13 @@ with dpg.window(
   height=height,
   no_resize=False,
 ):
-  dpg.add_radio_button(items=['Standing', 'Beggs'], horizontal=True,callback=radio_callback, default_value=currentCorr, tag="corr")
+  dpg.add_radio_button(
+    items=['Standing', 'Beggs'],
+    horizontal=True,
+    callback=radio_callback,
+    default_value=currentCorr,
+    tag="corr"
+  )
   dpg.add_input_float(label="Gravedad API", source="float_value", tag="API")
   dpg.add_input_float(label="Saturación de agua", source="float_value", tag="SW")
   dpg.add_input_float(label="Presión de burbujeo", source="float_value", tag="Pb")
