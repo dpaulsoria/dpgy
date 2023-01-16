@@ -1,26 +1,22 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import dearpygui.dearpygui as dpg
 
-# x and y coordinates of the points to fit
-x = [1, 2, 3, 4]
-y = [2, 4, 1, 5]
+dpg.create_context()
 
-# fit a line to the points
-coefficients = np.polyfit(x, y, 1)
+with dpg.value_registry():
+    dpg.add_bool_value(default_value=True, tag="bool_value")
+    dpg.add_string_value(default_value="Default string", tag="string_value")
 
-# create a new figure
-plt.figure()
+with dpg.window(label="Tutorial"):
+    dpg.add_checkbox(label="Radio Button1", source="bool_value")
+    dpg.add_checkbox(label="Radio Button2", source="bool_value")
 
-# plot the points
-plt.scatter(x, y)
+    dpg.add_input_text(label="Text Input 1", source="string_value", tag="input")
+    dpg.add_input_text(label="Text Input 2", source="string_value", password=True)
 
-# plot the line of best fit
-plt.plot(x, np.polyval(coefficients, x), 'r-')
 
-# add labels and a title to the plot
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('My Scatter Plot')
 
-# show the plot
-plt.show()
+dpg.create_viewport(title='Custom Title', width=800, height=600)
+dpg.setup_dearpygui()
+dpg.show_viewport()
+dpg.start_dearpygui()
+dpg.destroy_context()
