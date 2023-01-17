@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from util.volumetrico_sub_saturado import *
+from util.empuje_agua import *
+from util.empuje_gas import *
 
 width = 780
 height = 620
@@ -62,6 +64,7 @@ def makeByType(data, type, currentCorr):
     
   elif ("Reservorios con empuje de capa de agua" == type):
     dpg.show_item("buscar_archivo_button")
+    wi = calcular(data)
   elif ("Reservorios con empuje de capa de gas" == type):
     pass
 
@@ -185,14 +188,14 @@ with dpg.window(
     default_value=currentCorr,
     tag="corr"
   )
-  dpg.add_input_float(label="Gravedad API", source="float_value", tag="API", show=False, format="%.1f")
-  dpg.add_input_float(label="Saturación de agua", source="float_value", tag="SW", show=False, format="%.3f")
-  dpg.add_input_float(label="Presión de burbujeo", source="float_value", tag="Pb", show=False, format="%.1f")
-  dpg.add_input_float(label="Gravedad específica del gas", source="float_value", tag="Gg", show=False, format="%.3f")
-  dpg.add_input_float(label="Temperatura en F", source="float_value", tag="Tf", show=False, format="%.3f")
-  dpg.add_input_float(label="Cf", source="float_value", tag="Cf", show=False, format="%.9f")
-  dpg.add_input_float(label="Cw", source="float_value", tag="Cw", show=False, format="%.9f")
-  dpg.add_input_float(label="Bw", source="float_value", tag="Bw", show=False, format="%.3f")
+  dpg.add_input_float(default_value=40.0, label="Gravedad API", source="float_value", tag="API", show=False, format="%.1f")
+  dpg.add_input_float(default_value=0.24 ,label="Saturación de agua", source="float_value", tag="SW", show=False, format="%.3f")
+  dpg.add_input_float(default_value=1500.0,label="Presión de burbujeo", source="float_value", tag="Pb", show=False, format="%.1f")
+  dpg.add_input_float(default_value=0.85, label="Gravedad específica del gas", source="float_value", tag="Gg", show=False, format="%.3f")
+  dpg.add_input_float(default_value=135.0, label="Temperatura en F", source="float_value", tag="Tf", show=False, format="%.3f")
+  dpg.add_input_float(default_value=0.00000362, label="Cf", source="float_value", tag="Cf", show=False, format="%.9f")
+  dpg.add_input_float(default_value=0.00000362, label="Cw", source="float_value", tag="Cw", show=False, format="%.9f")
+  dpg.add_input_float(default_value=1.0, label="Bw", source="float_value", tag="Bw", show=False, format="%.3f")
   dpg.add_button(label="Buscar archivo", callback=generateOpenDialog, tag="buscar_archivo_button", show=False)
   
   api = dpg.get_value("API")
