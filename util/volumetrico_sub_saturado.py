@@ -1,12 +1,7 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from datetime import datetime as dt
 
-
-cw = 3.62e-6
-cf = 4.95e-6
-bw = 1
 
 tmp = []
 

@@ -1,7 +1,24 @@
 import math as m
 
+def F(n, Eo, m, Eg, We):
+  return n * Eo + We
 
-def calcular(data):
+# Intrusión del agua acumulada
+# Cw es la compresibilidad del agua del acuifero
+# Cf es la compresibilidad de la roca del acuifero
+# Wi es el volumen inicial del acuifero
+# deltaP es Pi - P
+# pi es la presión inicial del yacimiento y p la presión actual
+def We(Cw, Cf, Wi, deltaP):
+  return (Cw + Cf) * Wi * deltaP
+
+def f(ang):
+  return ang/360
+
+
+
+
+def calcular(data, deltaP, ang):
   yacimiento = data['Yacimiento']
   acuifero  = data['Acuifero']
   
@@ -18,12 +35,16 @@ def calcular(data):
   a_espesor = acuifero[4]
   
   wi = (m.pi * (a_r ** 2 - y_r ** 2) * a_espesor * a_porosidad)/5.615
-  # we = (y_lpc_formacion + a_lpc_formacion) * (wi * (10 ** 6)) * (80/360) * 200
-  k = 1
-  deltaP = 1
-  we = k * deltaP
+
+  # Wc = K * deltaP
+  we = We(a_lpc_agua, a_lpc_formacion, wi, deltaP)
+  
+  # F/Eo = deltaP / Eo
+  # N es el intercepto
+  # K es la endiente
   N = 1
   K = 1
   Eo = 1
+  
   FEo = N + K * (deltaP / Eo)
   return wi

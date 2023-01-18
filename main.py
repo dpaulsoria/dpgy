@@ -17,15 +17,15 @@ def saveExcel(df, currentCorr):
   print("Saving...", name)
   df.to_excel(name, index=False)
 
-def doGraphic(df):
-  x = np.array(df['Eo+Efw'].tolist(), dtype=np.float64)
-  y = np.array(df['F'].tolist(), dtype=np.float64)
+def doGraphic(df, ylabel, xlabel):
+  x = np.array(df[xlabel].tolist(), dtype=np.float64)
+  y = np.array(df[ylabel].tolist(), dtype=np.float64)
   coefficients = np.polyfit(x, y, 1)
   plt.scatter(x, y)
   plt.plot(x, np.polyval(coefficients, x), 'r-')
-  plt.xlabel('Eo+Efw')
-  plt.ylabel('F')
-  plt.title('Eo+Efw vs F')
+  plt.xlabel(xlabel)
+  plt.ylabel(ylabel)
+  plt.title(f'{xlabel} vs {ylabel}: I {coefficients[1]} M {coefficients[0]}')
   plt.show(block=True)
 
 
@@ -59,14 +59,22 @@ def makeByType(data, type, currentCorr):
     # print(toWorkWith)
     resultDf = do(toWorkWith, values)
     create_table(resultDf)
-    doGraphic(resultDf)
+    doGraphic(resultDf, 'F', 'Eo+Efw')
     saveExcel(resultDf, currentCorr)
     
   elif ("Reservorios con empuje de capa de agua" == type):
-    dpg.show_item("buscar_archivo_button")
-    wi = calcular(data)
-  elif ("Reservorios con empuje de capa de gas" == type):
-    pass
+    deltaP = dpg.get_value("deltaP")
+    ang = dpg.get_value("ang")
+    wi = calcular(data, deltaP, ang)
+  elif ("Reservorios con empuje de capa de gas (N y m desconocidos)" == type):
+    df = getRp(data)
+    df = getF(df, np.float64(dpg.get_value("Rsi")))
+    df = getEo(df)
+    df = getEg(df)
+    df = getFEo(df)
+    df = getEgEo(df)
+    doGraphic(df, "F/Eo", "Eg/Eo")
+    saveExcel(df, "capaGas")
 
 def create_table(data):
   rows = data.shape[0]
@@ -147,10 +155,36 @@ def combo_callback():
     dpg.show_item("Bw")
     dpg.show_item("buscar_archivo_button")
     dpg.show_item("corr")
+    
+    dpg.hide_item("deltaP")
+    dpg.hide_item("ang")
   elif ("Reservorios con empuje de capa de agua" == tmp):
+    dpg.show_item("deltaP")
+    dpg.show_item("ang")
     dpg.show_item("buscar_archivo_button")
-  elif ("Reservorios con empuje de capa de gas" == tmp):
-    pass
+    
+    dpg.hide_item("API")
+    dpg.hide_item("SW")
+    dpg.hide_item("Pb")
+    dpg.hide_item("Gg")
+    dpg.hide_item("Tf")
+    dpg.hide_item("Cf")
+    dpg.hide_item("Cw")
+    dpg.hide_item("Bw")
+    dpg.hide_item("corr")
+  elif ("Reservorios con empuje de capa de gas (N y m desconocidos)" == tmp):
+    dpg.show_item("Rsi")
+    dpg.show_item("buscar_archivo_button")
+    
+    dpg.hide_item("API")
+    dpg.hide_item("SW")
+    dpg.hide_item("Pb")
+    dpg.hide_item("Gg")
+    dpg.hide_item("Tf")
+    dpg.hide_item("Cf")
+    dpg.hide_item("Cw")
+    dpg.hide_item("Bw")
+    dpg.hide_item("corr")
 
 def generateOpenDialog():
   with dpg.file_dialog(
@@ -161,8 +195,8 @@ def generateOpenDialog():
     id="file_dialog_id", 
     width=width-width*0.3, height=height-height*0.3
   ):
-      dpg.add_file_extension(".xlsx", color=(81, 191, 89, 255), custom_text="[xlsx]")
-      dpg.add_file_extension(".csv", color=(0, 255, 0, 255), custom_text="[csv]")
+    dpg.add_file_extension(".xlsx", color=(81, 191, 89, 255), custom_text="[xlsx]")
+    dpg.add_file_extension(".csv", color=(0, 255, 0, 255), custom_text="[csv]")
 
 with dpg.window(
   label='Main Window', 
@@ -176,8 +210,8 @@ with dpg.window(
     label="Tipo de reservorio",
     items=[
       "Volumétricos sub saturados",
-      "Reservorios con empuje de capa de gas",
       "Reservorios con empuje de capa de agua",
+      "Reservorios con empuje de capa de gas (N y m desconocidos)",
     ], tag="type",
     callback=combo_callback
   )
@@ -186,16 +220,23 @@ with dpg.window(
     horizontal=True,
     callback=radio_callback,
     default_value=currentCorr,
-    tag="corr"
+    tag="corr",
+    show=False
   )
+  # Volumétricos sub saturados
   dpg.add_input_float(default_value=40.0, label="Gravedad API", source="float_value", tag="API", show=False, format="%.1f")
   dpg.add_input_float(default_value=0.24 ,label="Saturación de agua", source="float_value", tag="SW", show=False, format="%.3f")
   dpg.add_input_float(default_value=1500.0,label="Presión de burbujeo", source="float_value", tag="Pb", show=False, format="%.1f")
   dpg.add_input_float(default_value=0.85, label="Gravedad específica del gas", source="float_value", tag="Gg", show=False, format="%.3f")
   dpg.add_input_float(default_value=135.0, label="Temperatura en F", source="float_value", tag="Tf", show=False, format="%.3f")
-  dpg.add_input_float(default_value=0.00000362, label="Cf", source="float_value", tag="Cf", show=False, format="%.9f")
-  dpg.add_input_float(default_value=0.00000362, label="Cw", source="float_value", tag="Cw", show=False, format="%.9f")
-  dpg.add_input_float(default_value=1.0, label="Bw", source="float_value", tag="Bw", show=False, format="%.3f")
+  dpg.add_input_float(default_value=0.00000495, label="Compresibilidad isotérmica del agua", source="float_value", tag="Cf", show=False, format="%.9f")
+  dpg.add_input_float(default_value=0.00000362, label="Compresibilidad isotérmica de la formación", source="float_value", tag="Cw", show=False, format="%.9f")
+  dpg.add_input_float(default_value=1.0, label="Factor volumétrico del agua", source="float_value", tag="Bw", show=False, format="%.3f")
+  # Reservorios con empuje de capa de agua
+  dpg.add_input_float(default_value=200.0, label="Caída de presión", source="float_value", tag="deltaP", show=False, format="%.3f")
+  dpg.add_input_float(default_value=80.0, label="Ángulo de intrusión", source="float_value", tag="ang", show=False, format="%.3f")
+  # Reservorios con empuje de capa de gas (N y m desconocidos)
+  dpg.add_input_float(default_value=0.000975, label="Solubilidad inicial del gas", source="float_value", tag="Rsi", show=False, format="%.15f")
   dpg.add_button(label="Buscar archivo", callback=generateOpenDialog, tag="buscar_archivo_button", show=False)
   
   api = dpg.get_value("API")
