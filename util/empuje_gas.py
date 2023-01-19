@@ -101,3 +101,12 @@ def getEgEo(df):
   print("EgEoDf:")
   print(EgEoDf)
   return pd.concat([df, EgEoDf], axis=1)
+
+def doCapaGas(dpg, data):
+  df = getRp(data)
+  df = getF(df, np.float64(dpg.get_value("Rsi")))
+  df = getEo(df)
+  df = getEg(df)
+  df = getFEo(df)
+  df = getEgEo(df)
+  return df
