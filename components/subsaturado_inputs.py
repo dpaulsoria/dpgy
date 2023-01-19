@@ -1,0 +1,10 @@
+def genSubSaturadosInputs(dpg):
+  dpg.add_input_float(default_value=40.0, label="Gravedad API", source="float_value", tag="API", show=False, format="%.1f")
+  dpg.add_input_float(default_value=0.24 ,label="Saturación de agua", source="float_value", tag="Sw", show=False, format="%.3f")
+  dpg.add_input_float(default_value=1500.0,label="Presión de burbujeo", source="float_value", tag="Pb", show=False, format="%.1f")
+  dpg.add_input_float(default_value=0.85, label="Gravedad específica del gas", source="float_value", tag="Gg", show=False, format="%.3f")
+  dpg.add_input_float(default_value=135.0, label="Temperatura en F", source="float_value", tag="Tf", show=False, format="%.3f")
+  dpg.add_input_float(default_value=0.00000495, label="Compresibilidad isotérmica del agua", source="float_value", tag="Cf", show=False, format="%.9f")
+  dpg.add_input_float(default_value=0.00000362, label="Compresibilidad isotérmica de la formación", source="float_value", tag="Cw", show=False, format="%.9f")
+  dpg.add_input_float(default_value=1.0, label="Factor volumétrico del agua", source="float_value", tag="Bw", show=False, format="%.3f")
+  dpg.add_input_float(default_value=0.0000038, label="Compresibilidad del petroleo", source="float_value", tag="Co", show=False, format="%.8f")
