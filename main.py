@@ -17,7 +17,6 @@ from components.capagas_inputs import *
 width = 780
 height = 620
 currentCorr = 'Standing'
-show_table = False
 
 def saveExcel(df, currentCorr, type):
   name = f'output/result_{dt.now().strftime("%d_%m_%Y_%Hh%Mm%Ss")}_{currentCorr}_{type}.xlsx'
@@ -34,7 +33,7 @@ def makeByType(data, type, currentCorr):
     resultDf = doSubSaturado(df, subSaturado)
     genTable(dpg, resultDf, width, height)
     doGraphic(resultDf, 'F', 'Eo+Efw', True)
-    saveExcel(resultDf, currentCorr)
+    saveExcel(resultDf, currentCorr, "subSaturado")
   
   elif ("Volumétricos saturados" == type):
     saturado = getValuesSaturado(dpg)
@@ -42,7 +41,7 @@ def makeByType(data, type, currentCorr):
     tmp = useCorr(df, saturado, currentCorr, "Saturado")
     genTable(dpg, tmp, width, height)
     doGraphic(tmp, "F/Eo", "DeltaP/Eo", True)
-    saveExcel(tmp, "saturado")
+    saveExcel(tmp, currentCorr, "saturado")
     
   elif ("Reservorios con empuje de capa de agua" == type):
     deltaP = dpg.get_value("deltaP")
