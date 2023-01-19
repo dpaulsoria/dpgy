@@ -6,6 +6,7 @@ import numpy as np
 from util.volumetrico_sub_saturado import *
 from util.empuje_agua import *
 from util.empuje_gas import *
+from util.volumetrico_saturado import *
 
 width = 780
 height = 620
@@ -17,9 +18,12 @@ def saveExcel(df, currentCorr):
   print("Saving...", name)
   df.to_excel(name, index=False)
 
-def doGraphic(df, ylabel, xlabel):
+def doGraphic(df, ylabel, xlabel, type="x"):
   x = np.array(df[xlabel].tolist(), dtype=np.float64)
   y = np.array(df[ylabel].tolist(), dtype=np.float64)
+  if (type == "saturado"):
+    x = x[1:]
+    y = y[1:]
   coefficients = np.polyfit(x, y, 1)
   plt.scatter(x, y)
   plt.plot(x, np.polyval(coefficients, x), 'r-')
@@ -61,6 +65,12 @@ def makeByType(data, type, currentCorr):
     create_table(resultDf)
     doGraphic(resultDf, 'F', 'Eo+Efw')
     saveExcel(resultDf, currentCorr)
+  
+  elif ("Volumétricos saturados" == type):
+    df = doSaturado(data)
+    create_table(df)
+    doGraphic(df, "F/Eo", "DeltaP/Eo", "saturado")
+    saveExcel(df, "saturado")
     
   elif ("Reservorios con empuje de capa de agua" == type):
     deltaP = dpg.get_value("deltaP")
@@ -158,6 +168,22 @@ def combo_callback():
     
     dpg.hide_item("deltaP")
     dpg.hide_item("ang")
+  elif ("Volumétricos saturados" == tmp):
+    dpg.show_item("buscar_archivo_button")
+
+    dpg.hide_item("API")
+    dpg.hide_item("SW")
+    dpg.hide_item("Pb")
+    dpg.hide_item("Gg")
+    dpg.hide_item("Tf")
+    dpg.hide_item("Cf")
+    dpg.hide_item("Cw")
+    dpg.hide_item("Bw")
+    dpg.hide_item("corr")
+    dpg.hide_item("deltaP")
+    dpg.hide_item("ang")
+    dpg.hide_item("Rsi")
+
   elif ("Reservorios con empuje de capa de agua" == tmp):
     dpg.show_item("deltaP")
     dpg.show_item("ang")
@@ -210,6 +236,7 @@ with dpg.window(
     label="Tipo de reservorio",
     items=[
       "Volumétricos sub saturados",
+      "Volumétricos saturados",
       "Reservorios con empuje de capa de agua",
       "Reservorios con empuje de capa de gas (N y m desconocidos)",
     ], tag="type",
