@@ -21,7 +21,8 @@ def genCombobox(dpg, items, callback):
     label="Tipo de reservorio",
     items=items,
     tag="type",
-    callback=callback
+    callback=callback,
+    show=True
   )
   
 def genRadioButton(dpg, items, callback, default_value="Standing"):
@@ -31,7 +32,7 @@ def genRadioButton(dpg, items, callback, default_value="Standing"):
     callback=callback,
     default_value=default_value,
     tag="corr",
-    show=False
+    show=True
   )
   
   
@@ -69,10 +70,10 @@ def genTable(dpg, df, width, height):
             
 
 
-def doGraphic(df, ylabel, xlabel, type="x"):
+def doGraphic(df, ylabel, xlabel, jumpFirst):
   x = np.array(df[xlabel].tolist(), dtype=np.float64)
   y = np.array(df[ylabel].tolist(), dtype=np.float64)
-  if (type == "saturado"):
+  if (jumpFirst):
     x = x[1:]
     y = y[1:]
   coefficients = np.polyfit(x, y, 1)

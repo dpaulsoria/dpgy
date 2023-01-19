@@ -1,9 +1,9 @@
 import numpy as np
 
-SubSaturado = ["corr", "API", "Sw", "Pb", "Gg", "Tf", "Cf", "Cw", "Bw", "Co"]
+SubSaturado = ["API", "Sw", "Pb", "Gg", "Tf", "Cf", "Cw", "Bw", "Co"]
 Saturado = SubSaturado.copy()
 CapaAgua = ["deltaP", "ang"]
-CapaGas = ["Rsi"]
+CapaGas = ["Rsi", "Pb", "Co", "Gg", "API", "Tf"]
 
 
 def hide(dpg, list):
@@ -27,28 +27,28 @@ def hideCapaGas(dpg):
   hide(dpg, CapaGas)
     
 def showSubSaturado(dpg):
-  show(dpg, SubSaturado)
-  hideSaturado(dpg)
+  # hideSaturado(dpg)
   hideCapaAgua(dpg)
   hideCapaGas(dpg)
+  show(dpg, SubSaturado)
 
 def showSaturado(dpg):
-  show(dpg, Saturado)
-  hideSubSaturado(dpg)
+  # hideSubSaturado(dpg)
   hideCapaAgua(dpg)
   hideCapaGas(dpg)
+  show(dpg, Saturado)
   
 def showCapaAgua(dpg):
-  show(dpg, CapaAgua)
   hideSubSaturado(dpg)
-  hideSaturado(dpg)
+  # hideSaturado(dpg)
   hideCapaGas(dpg)
+  show(dpg, CapaAgua)
   
 def showCapaGas(dpg):
-  show(dpg, CapaGas)
   hideSubSaturado(dpg)
-  hideSaturado(dpg)
+  # hideSaturado(dpg)
   hideCapaAgua(dpg)
+  show(dpg, CapaGas)
   
 def getValues(dpg, list):
   x = dict()
@@ -57,12 +57,14 @@ def getValues(dpg, list):
   return x
 
 def getValuesSubSaturado(dpg):
-  tmp = SubSaturado.copy()
-  tmp.remove('corr')
-  return getValues(dpg, tmp)
+  return getValues(dpg, SubSaturado)
   
 def getValuesSaturado(dpg):
-  tmp = Saturado.copy()
-  tmp.remove('corr')
-  return getValues(dpg, tmp)
+  return getValues(dpg, Saturado)
+
+def getValuesCapaGas(dpg):
+  return getValues(dpg, CapaGas)
+  
+def getValuesCapaAgua(dpg):
+  return getValues(dpg, CapaAgua)
   

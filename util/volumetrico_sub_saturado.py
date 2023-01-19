@@ -58,21 +58,26 @@ def doCorr(currentCorr, values, p, type):
     if (type == "SubSaturado"):
       bob = standing.getBo1(values, rs)
       bo = standing.getBo(values, bob, p)
-    else:
+    elif (type == "Saturado"):
+      bo = standing.getBo1(values, rs)
+    elif (type == "capaGas"):
       bo = standing.getBo1(values, rs)
     return rs, bo
-  else:
+  elif (currentCorr == "Beggs"):
     rs = beggs.getRs(values, p)
     if (type == "SubSaturado"):
-      bob = standing.getBo1(values, rs)
-      bo = standing.getBo(values, bob, p)
-    else:
-      bo = standing.getBo1(values, rs)
+      bob = beggs.getBo1(values, rs)
+      bo = beggs.getBo(values, bob, p)
+    elif (type == "Saturado"):
+      bo = beggs.getBo1(values, rs)
+    elif (type == "capaGas"):
+      bo = beggs.getBo1(values, rs)
     return rs, bo
   
   
 def useCorr(df, values, currentCorr, type):
-  values['Gp'] =  np.float64((141.5/(values['API'] + 131.5)))
+  api = np.float64(values['API'])
+  values['Gp'] =  np.float64((141.5/(api + 131.5)))
   
   PArray = np.array(df["P"].tolist(), dtype=np.float64)
   corrResultBo = []

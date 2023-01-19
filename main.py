@@ -19,8 +19,8 @@ height = 620
 currentCorr = 'Standing'
 show_table = False
 
-def saveExcel(df, currentCorr):
-  name = f'output/fileCreatedAt_{dt.now().strftime("%d_%m_%Y_%Hh%Mm%Ss")}_{currentCorr}.xlsx'
+def saveExcel(df, currentCorr, type):
+  name = f'output/result_{dt.now().strftime("%d_%m_%Y_%Hh%Mm%Ss")}_{currentCorr}_{type}.xlsx'
   print("Saving...", name)
   df.to_excel(name, index=False)
 
@@ -33,7 +33,7 @@ def makeByType(data, type, currentCorr):
     df = useCorr(data, subSaturado, currentCorr, "SubSaturado")
     resultDf = doSubSaturado(df, subSaturado)
     genTable(dpg, resultDf, width, height)
-    doGraphic(resultDf, 'F', 'Eo+Efw')
+    doGraphic(resultDf, 'F', 'Eo+Efw', True)
     saveExcel(resultDf, currentCorr)
   
   elif ("Volumétricos saturados" == type):
@@ -41,7 +41,7 @@ def makeByType(data, type, currentCorr):
     df = doSaturado(data)
     tmp = useCorr(df, saturado, currentCorr, "Saturado")
     genTable(dpg, tmp, width, height)
-    doGraphic(tmp, "F/Eo", "DeltaP/Eo", "saturado")
+    doGraphic(tmp, "F/Eo", "DeltaP/Eo", True)
     saveExcel(tmp, "saturado")
     
   elif ("Reservorios con empuje de capa de agua" == type):
@@ -55,8 +55,10 @@ def makeByType(data, type, currentCorr):
     df = getEg(df)
     df = getFEo(df)
     df = getEgEo(df)
-    doGraphic(df, "F/Eo", "Eg/Eo")
-    saveExcel(df, "capaGas")
+    tmp = useCorr(df, getValuesCapaGas(dpg), currentCorr, "capaGas")
+    genTable(dpg, tmp, width, height)
+    doGraphic(df, "F/Eo", "Eg/Eo", True)
+    saveExcel(df, currentCorr, "capaGas")
 
 # Functions
 def openFile(sender, app_data):
